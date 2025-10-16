@@ -88,7 +88,7 @@ public class Game {
 			Integer gameCounter = 0;
 			Integer ranNum = generateNumberToBeGuessed(1, 100);
 			System.out.print(displayPleaseGuessMessage()); 
-			System.out.println(ranNum);
+			//System.out.println(ranNum);
 			
 			// Game Sequence guesses
 			while (true) {
