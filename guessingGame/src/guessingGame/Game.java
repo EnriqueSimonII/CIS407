@@ -116,12 +116,7 @@ public class Game {
 				break;
 			}
 		}
-		
-		/*
-		Integer ranNum = generateNumberToBeGuessed(0, 100);
-		Integer guessNum = makeGuess(scanner);
-		System.out.println(ranNum);
-		*/
+	
 	}
 
 }
