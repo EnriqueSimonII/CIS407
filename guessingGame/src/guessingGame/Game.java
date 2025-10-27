@@ -3,6 +3,7 @@
 package guessingGame;
 import java.util.Random;
 import java.util.Scanner;
+import static java.lang.Math.abs;
 
 public class Game {
 	// Elements Global
@@ -60,10 +61,25 @@ public class Game {
 	}
 	
 	// Guess Again Message
-	public static String displayGuessAgainMessage(Integer playerGuess, Integer randomNum) {
+	public static String displayGuessAgainMessage(Integer playerGuess, Integer randomNum, Integer gameCount, Integer prevGuess) {
 		String hint = "";
 		Integer delta = playerGuess - randomNum;
+		Integer prevDelta = prevGuess - randomNum;
+		String hotColdHint = "";
 		
+		// Hot Cold Logic
+		if (gameCount > 1) {
+			if (abs(delta) < abs(prevDelta)) {
+				hotColdHint = "Warmer";
+			} else if (abs(delta) == abs(prevDelta)) {
+				hotColdHint = "Stale";
+			} else {
+				hotColdHint = "Colder";
+			}
+		}
+		
+		
+		// Too High or Too Low
 		if (delta > 10) {
 			hint = "Way too high!";
 		} else if (delta <= 10 && delta > 0) {
@@ -74,49 +90,12 @@ public class Game {
 			hint = "Too low!";
 		}
 		
-		return "YOUR ANSWER WAS: INCORRECT (hint = " + hint + ")\n\n";
+		return "YOUR ANSWER WAS: INCORRECT (hint = " + hotColdHint + " & " + hint + ")\n\n";
 	}
 	
 	// Game Script
 	public static void main(String[] args) {
-		// Elements & Intro
-		String playAgain = "y";
-		System.out.print(displayWelcomeMessage()); 
 		
-		// Game Sequence
-		while (true) {
-			Integer gameCounter = 0;
-			Integer ranNum = generateNumberToBeGuessed(1, 100);
-			System.out.print(displayPleaseGuessMessage()); 
-			//System.out.println(ranNum);
-			
-			// Game Sequence guesses
-			while (true) {
-				Integer guessNumber = makeGuess(scanner);
-				gameCounter ++;
-				
-				if (isCorrectGuess(guessNumber, ranNum)) {
-					// Correct
-					System.out.print(displayCorrectGuessMessage(gameCounter));
-					break;
-				} else {
-					// Incorrect
-					System.out.print(displayGuessAgainMessage(guessNumber, ranNum));
-				}
-			}
-			
-			// Exit Logic
-			System.out.print("Would you like to play again? (y/n) ——————————: ");
-			scanner.nextLine();
-			playAgain = scanner.nextLine();
-			if (playAgain.toLowerCase().equals("y")) {
-				continue;
-			} else if (playAgain.toLowerCase().equals("n")) {
-				System.out.print("\n____________________________________________________\n\n********** THANKS FOR PLAYING BYE!! **********\n\n");
-				break;
-			}
-		}
-	
 	}
 
 }
