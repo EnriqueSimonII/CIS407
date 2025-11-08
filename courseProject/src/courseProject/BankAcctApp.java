@@ -5,9 +5,12 @@ import java.util.Scanner;
 
 public class BankAcctApp {
 	
+	// Elements & Variables
 	public static Scanner scanner = new Scanner(System.in);
 
+	// Main App
 	public static void main(String[] args) {
+		
 		// Elements & Variable
 		String entryPermission;
 		
@@ -132,6 +135,9 @@ public class BankAcctApp {
 				System.out.print("CUSTOMER PHONE (10 char only) ----: ");
 				cust_PHONE = scanner.nextLine().trim();
 			}
+			
+			// Close Scanner
+			scanner.close();
 			
 			// Customer: instantiate
 			Customer cust1 = new Customer(cust_ID, cust_SSN, cust_LAST, 
