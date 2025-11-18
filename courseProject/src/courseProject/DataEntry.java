@@ -1,6 +1,9 @@
 package courseProject;
 import java.time.format.DateTimeFormatter;
 import java.time.LocalDate;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 
 public class DataEntry {
 	
@@ -29,6 +32,19 @@ public class DataEntry {
 		
 		return validEntry;
 	}
+	
+	// Check String Strict Options Requirement
+		public static boolean checkStringOptions(List<String> optionsList, String inputString) {
+			boolean validEntry; 
+			
+			if (optionsList.contains(inputString)) {
+				validEntry = true;
+			} else {
+				validEntry = false;
+			}
+			
+			return validEntry;
+		}
 	
 	// Check String ONLY Numerical Char
 	public static boolean checkStringNumbers(String inputString) {
@@ -96,6 +112,32 @@ public class DataEntry {
 		
 		return validEntry;
 	}
+	
+	// Check Double NO Range Requirement
+		public static boolean checkDouble(Double inputDouble) {
+			boolean validEntry;
+			
+			if (inputDouble instanceof Double) {
+				validEntry = true;
+			} else {
+				validEntry = false;
+			}
+			
+			return validEntry;
+		}
+		
+		// Check Double WITH Range Requirements
+		public static boolean checkDoubleRange(Double inputDouble, Double minRange, Double maxRange) {
+			boolean validEntry;
+			
+			if (inputDouble >= minRange && inputDouble <= maxRange) {
+				validEntry = true;
+			} else {
+				validEntry = false;
+			}
+			
+			return validEntry;
+		}
 	
 	// Check Date 
 	public static boolean checkDate(String inputDate) {
