@@ -1,6 +1,6 @@
 package courseProject;
 
-public class Account {
+abstract class Account {
 	
 	// Instance Variables
 	private String acctNumber;
@@ -23,6 +23,11 @@ public class Account {
 		acctBal = acct_BAL;
 		
 	}
+	
+	// Abstract Methods
+	public abstract void withdrawal();
+	public abstract void deposit();
+	public abstract void balance();
 
 	// Return ALL Data
 	public String toString() {
