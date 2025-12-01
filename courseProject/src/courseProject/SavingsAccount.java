@@ -1,6 +1,6 @@
 package courseProject;
 
-public class CheckingAccount extends Account{
+public class SavingsAccount extends Account {
 	
 	// Instance Variables
 	public String valid_Date;
@@ -8,7 +8,7 @@ public class CheckingAccount extends Account{
 	public Double amount;
 	
 	// Super Class Instantiation
-	public CheckingAccount(String acct_NUM, String acct_TYPE, Double serv_FEE, 
+	public SavingsAccount(String acct_NUM, String acct_TYPE, Double serv_FEE, 
 		                   Double int_RATE, Double ovDraft_FEE, Double acct_BAL, 
 		                   String acctCust_ID) {
 		
@@ -23,9 +23,6 @@ public class CheckingAccount extends Account{
 		
 		// Withdraw & Charge Fees
 		acctBal -= (inputAmount + serviceFee);
-		if (acctBal < 0) {
-			acctBal -= ovDraftFee;
-		}
 	}
 	
 	@Override
@@ -54,6 +51,9 @@ public class CheckingAccount extends Account{
 			return false;
 		}
 	}
+
+		
+		
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub

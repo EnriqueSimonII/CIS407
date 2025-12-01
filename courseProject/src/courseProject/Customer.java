@@ -3,15 +3,15 @@ package courseProject;
 public class Customer {
 	
 	// Instance Variables
-	private String customerID;
-	private String customerSSN;
-	private String customerLast;
-	private String customerFirst;
-	private String customerStreet;
-	private String customerCity;
-	private String customerState;
-	private String customerZip;
-	private String customerPhone;
+	protected String customerID;
+	protected String customerSSN;
+	protected String customerLast;
+	protected String customerFirst;
+	protected String customerStreet;
+	protected String customerCity;
+	protected String customerState;
+	protected String customerZip;
+	protected String customerPhone;
 	
 	// Customer Creation
 	public Customer(String cust_ID, String cust_SSN, String cust_LAST, 

@@ -1,6 +1,4 @@
 package courseProject;
-import courseProject.Customer;
-import courseProject.DataEntry;
 import java.util.Arrays;
 import java.util.ArrayList;
 import java.util.Scanner;
@@ -10,13 +8,19 @@ public class BankAcctApp {
 	// Elements & Variables
 	public static Scanner scanner = new Scanner(System.in);
 
-	// Main App
+	// Main Application
 	public static void main(String[] args) {
 		
 		// Elements & Variable
 		String entryPermission;
 		String summaryPermission;
 		Integer menuOption;
+		String matchCustomer = "No Customer";
+		Integer accountSelection;
+		Account activeAccount;
+		Integer accountAction;
+		Double transAmount;
+		Boolean transApproved = false;
 		String cust_ID;
 		String cust_SSN;
 		String cust_LAST;
@@ -32,6 +36,7 @@ public class BankAcctApp {
 		Double int_RATE;
 		Double ovDraft_FEE;
 		Double acct_BAL = 0.00;
+		String acctCust_ID;
 		ArrayList<Account> accounts_List = new ArrayList<>();
 		ArrayList<Customer> customers_List = new ArrayList<>();
 
@@ -55,13 +60,13 @@ public class BankAcctApp {
 			}
 		}
 		
+		// Banking System Data Entry
 		while (true) {
-			// Banking System Customer Entry
 			if (entryPermission.equals("y")) {
 				
 				// Header & Banner
 				System.out.print("\n-----------------------------------------------------------\nPLEASE CHOOSE AN OPTION:\n");
-				System.out.print("1) CREATE CUSTOMER\n2) CREATE ACCOUNT\n");
+				System.out.print("1) CREATE CUSTOMER\n2) CREATE ACCOUNT\n3) TRANSACTIONS\n");
 				
 				// Menu Selection
 				while (true) {
@@ -71,7 +76,7 @@ public class BankAcctApp {
 						System.out.print("\nSELECTION: ");
 						menuOption = scanner.nextInt();
 						
-						if (DataEntry.checkIntegerRange(menuOption, 1, 2) == false) {
+						if (DataEntry.checkIntegerRange(menuOption, 1, 3) == false) {
 							throw new IllegalArgumentException("error try again\n");
 						} else {
 							System.out.print("\n");
@@ -85,7 +90,7 @@ public class BankAcctApp {
 					}
 				}
 			
-				// Create Customer or Account
+				// MENU OPTION: Create Customer
 				if (menuOption == 1) {
 					
 					// Clear Buffer
@@ -297,7 +302,7 @@ public class BankAcctApp {
 					// Save to Customers
 					customers_List.add(cust_OBJ);
 
-					
+				// MENU OPTION:  Create Account
 				} else if (menuOption == 2) {
 					
 					// Clear Buffer
@@ -439,20 +444,179 @@ public class BankAcctApp {
 						}
 					}
 					
-					// Account: instantiate
-					Account acct_OBJ = new CheckingAccount(acct_NUM, acct_TYPE, serv_FEE,
-							                               int_RATE, ovDraft_FEE, acct_BAL);
+					// ACCT CUSTOMER ID
+					while (true) {
+						try {
+							
+							// Clear Buffer
+							scanner.nextLine();
+							
+							// Collect Data: CUSTOMER ID
+							System.out.print("CUSTOMER ID FK (max 5 char) ------: ");
+							acctCust_ID = scanner.nextLine().trim();
+							
+							// Validate Data: CUSTOMER ID
+							if (DataEntry.checkStringLength(acctCust_ID, 1, 5) == false) {
+								throw new IllegalArgumentException("ERROR --------------: INCORRENT FORMAT\n\n");
+							} else {
+								break;
+							}
+							
+						} catch (IllegalArgumentException ex) {
+							System.out.print(ex.getMessage());
+						} catch (Exception ex) {
+							System.out.print("ERROR --------------: INCORRENT FORMAT --> " + ex + "\n\n");
+						}
+					}
 					
-					// Save to Accounts
-					accounts_List.add(acct_OBJ);
+					// Account: instantiate
+					if (acct_TYPE.equals("CHK")) {
+						
+						// Add: Checking Account
+						Account acct_OBJ = new CheckingAccount(acct_NUM, acct_TYPE, serv_FEE,
+	                                                           int_RATE, ovDraft_FEE, acct_BAL, 
+	                                                           acctCust_ID);
+						// Save to Accounts
+						accounts_List.add(acct_OBJ);
+						
+					} else if (acct_TYPE.equals("SAV")) {
+						
+						// Add: Savings Account
+						Account acct_OBJ = new SavingsAccount(acct_NUM, acct_TYPE, serv_FEE,
+                                                              int_RATE, ovDraft_FEE, acct_BAL, 
+                                                              acctCust_ID);
+						// Save to Accounts
+						accounts_List.add(acct_OBJ);
+					}
+					
+				
+				// MENU OPTION: Transactions
+				} else if (menuOption == 3) {
+					
+					transApproved = false;
+					System.out.print("SELECT ACCOUNT BELOW: ");
+					
+					// Build Account Selections
+					for (Integer cnt_Acct = 0; cnt_Acct < accounts_List.size(); cnt_Acct++) {
+						
+						// Match Customer to Account
+						for (Integer cnt_Cust = 0; cnt_Cust < customers_List.size(); cnt_Cust++) {
+							if (accounts_List.get(cnt_Acct).acctCustomerID.equals(customers_List.get(cnt_Cust).customerID)) {
+								matchCustomer = customers_List.get(cnt_Cust).customerFirst + " " + customers_List.get(cnt_Cust).customerLast;
+								break;
+							}
+						}
+						
+						// Display all unique accounts
+						System.out.print("\n" + (cnt_Acct + 1) + ") NAME ---: " + matchCustomer +
+								                                " | ACCT# --: " + accounts_List.get(cnt_Acct).acctNumber +
+								                                " | TYPE ---: " + accounts_List.get(cnt_Acct).acctType);
+					}
+					
+					// Take Account Selection
+					while (true) {
+						try {
+							
+							// Collect Data: Menu Option
+							System.out.print("\n\nSELECTION: ");
+							accountSelection = scanner.nextInt();
+							
+							if (DataEntry.checkIntegerRange(accountSelection, 1, accounts_List.size()) == false) {
+								throw new IllegalArgumentException("error try again\n");
+							} else {
+								System.out.print("\n");
+								break;
+							}
+						} catch (IllegalArgumentException ex) {
+							System.out.print(ex.getMessage());
+						} catch (Exception ex) {
+							System.out.print("error try again " + ex.getMessage() + "\n");
+							scanner.nextLine();
+						}
+					}
+					
+					// Assign Active Account
+					activeAccount = accounts_List.get(accountSelection - 1);
+					
+					// Account Menu Options
+					System.out.print("\n-----------------------------------------------------------\nPLEASE CHOOSE AN OPTION:\n");
+					System.out.print("1) WITHDRAW\n2) DEPOSIT\n");
+					
+					// Account Menu Selection
+					while (true) {
+						try {
+							
+							// Collect Data: Menu Option
+							System.out.print("\nSELECTION: ");
+							accountAction = scanner.nextInt();
+							
+							if (DataEntry.checkIntegerRange(accountAction, 1, 2) == false) {
+								throw new IllegalArgumentException("error try again\n");
+							} else {
+								System.out.print("\n");
+								break;
+							}
+						} catch (IllegalArgumentException ex) {
+							System.out.print(ex.getMessage());
+						} catch (Exception ex) {
+							System.out.print("error try again " + ex.getMessage() + "\n");
+							scanner.nextLine();
+						}
+					}
+					
+					// Transaction Amount
+					while (true) {
+						try {
+							
+							// Collect Data: TRANSACTION AMOUNT
+							System.out.print("\nENTER TRANSACTION AMOUNT: ");
+							transAmount = scanner.nextDouble();
+							
+							// Validate Data: SUFFICIENT FUNDS
+							if (activeAccount.acctType.equals("SAV") && accountAction == 1 && activeAccount.acctBal <=0) {
+								System.out.print("Insufficient Funds for withdraw\nACCT BALANCE: EMPTY\n");
+								break;
+								
+							} else if (activeAccount.acctType.equals("SAV") && accountAction == 1 && !activeAccount.balance(transAmount)) {
+								throw new IllegalArgumentException("Insufficient Funds for withdraw\nACCT BALANCE: " + activeAccount.acctBal);
+								
+							} else if (!DataEntry.checkDouble(transAmount)) {
+								throw new IllegalArgumentException("ERROR --------------: INCORRENT FORMAT\n\n");
+								
+							} else {
+								transApproved = true;
+								break;
+							}
+							
+						} catch (IllegalArgumentException ex) {
+							System.out.print(ex.getMessage());
+						} catch (Exception ex) {
+							System.out.print("ERROR --------------: INCORRENT FORMAT --> " + ex + "\n\n");
+							scanner.nextLine();
+						}
+					}
+					
+					// Perform Transaction
+					if (accountAction == 1 && transApproved == true) {
+						
+						activeAccount.withdrawal(transAmount);
+						activeAccount.accrueInterest();
+						
+					} else if (accountAction == 2 && transApproved == true) {
+						activeAccount.deposit(transAmount);
+						activeAccount.accrueInterest();
+					}
+					
+					// Commit Transaction
+					accounts_List.set(accountSelection - 1, activeAccount);
 					
 					// Clear Buffer
 					scanner.nextLine();
 				}
 				
-				
 				// Confirm Print Summary
 				while (true) {
+					
 					System.out.print("\nWould you like a summary? (y/n): ");
 					String printSummary = scanner.nextLine();
 					
