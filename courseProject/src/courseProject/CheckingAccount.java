@@ -32,7 +32,7 @@ public class CheckingAccount extends Account{
 	public void deposit(double inputAmount) {
 		
 		// Deposit & Charge Fees
-		acctBal += (inputAmount + serviceFee);
+		acctBal += (inputAmount - serviceFee);
 	}
 	
 	@Override

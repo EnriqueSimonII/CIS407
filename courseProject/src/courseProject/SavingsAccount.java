@@ -29,7 +29,7 @@ public class SavingsAccount extends Account {
 	public void deposit(double inputAmount) {
 		
 		// Deposit & Charge Fees
-		acctBal += (inputAmount + serviceFee);
+		acctBal += (inputAmount - serviceFee);
 	}
 	
 	@Override

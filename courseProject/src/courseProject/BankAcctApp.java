@@ -19,7 +19,7 @@ public class BankAcctApp {
 		Integer accountSelection;
 		Account activeAccount;
 		Integer accountAction;
-		Double transAmount;
+		Double transAmount = 0.0;
 		Boolean transApproved = false;
 		String cust_ID;
 		String cust_SSN;
@@ -540,7 +540,7 @@ public class BankAcctApp {
 					
 					// Account Menu Options
 					System.out.print("\n-----------------------------------------------------------\nPLEASE CHOOSE AN OPTION:\n");
-					System.out.print("1) WITHDRAW\n2) DEPOSIT\n");
+					System.out.print("1) WITHDRAW\n2) DEPOSIT\n3) ACCRUE INTEREST\n");
 					
 					// Account Menu Selection
 					while (true) {
@@ -550,7 +550,7 @@ public class BankAcctApp {
 							System.out.print("\nSELECTION: ");
 							accountAction = scanner.nextInt();
 							
-							if (DataEntry.checkIntegerRange(accountAction, 1, 2) == false) {
+							if (DataEntry.checkIntegerRange(accountAction, 1, 3) == false) {
 								throw new IllegalArgumentException("error try again\n");
 							} else {
 								System.out.print("\n");
@@ -565,46 +565,56 @@ public class BankAcctApp {
 					}
 					
 					// Transaction Amount
-					while (true) {
-						try {
-							
-							// Collect Data: TRANSACTION AMOUNT
-							System.out.print("\nENTER TRANSACTION AMOUNT: ");
-							transAmount = scanner.nextDouble();
-							
-							// Validate Data: SUFFICIENT FUNDS
-							if (activeAccount.acctType.equals("SAV") && accountAction == 1 && activeAccount.acctBal <=0) {
-								System.out.print("Insufficient Funds for withdraw\nACCT BALANCE: EMPTY\n");
-								break;
+					if (accountAction == 1 || accountAction == 2) {
+						while (true) {
+							try {
 								
-							} else if (activeAccount.acctType.equals("SAV") && accountAction == 1 && !activeAccount.balance(transAmount)) {
-								throw new IllegalArgumentException("Insufficient Funds for withdraw\nACCT BALANCE: " + activeAccount.acctBal);
+								// Collect Data: TRANSACTION AMOUNT
+								System.out.print("\nENTER TRANSACTION AMOUNT: ");
+								transAmount = scanner.nextDouble();
 								
-							} else if (!DataEntry.checkDouble(transAmount)) {
-								throw new IllegalArgumentException("ERROR --------------: INCORRENT FORMAT\n\n");
+								// Validate Data: SUFFICIENT FUNDS
+								if (activeAccount.acctType.equals("SAV") && accountAction == 1 && activeAccount.acctBal <=0) {
+									System.out.print("Insufficient Funds for withdraw\nACCT BALANCE: EMPTY\n");
+									break;
+									
+								} else if (activeAccount.acctType.equals("SAV") && accountAction == 1 && !activeAccount.balance(transAmount)) {
+									throw new IllegalArgumentException("Insufficient Funds for withdraw\nACCT BALANCE: " + activeAccount.acctBal);
+									
+								} else if (!DataEntry.checkDouble(transAmount)) {
+									throw new IllegalArgumentException("ERROR --------------: INCORRENT FORMAT\n\n");
+									
+								} else {
+									transApproved = true;
+									break;
+								}
 								
-							} else {
-								transApproved = true;
-								break;
+							} catch (IllegalArgumentException ex) {
+								System.out.print(ex.getMessage());
+							} catch (Exception ex) {
+								System.out.print("ERROR --------------: INCORRENT FORMAT --> " + ex + "\n\n");
+								scanner.nextLine();
 							}
-							
-						} catch (IllegalArgumentException ex) {
-							System.out.print(ex.getMessage());
-						} catch (Exception ex) {
-							System.out.print("ERROR --------------: INCORRENT FORMAT --> " + ex + "\n\n");
-							scanner.nextLine();
 						}
 					}
+					
 					
 					// Perform Transaction
 					if (accountAction == 1 && transApproved == true) {
 						
 						activeAccount.withdrawal(transAmount);
-						activeAccount.accrueInterest();
+						System.out.print("\n\n-----------------------------------------------------------" + 
+				                         "\nACCOUNT CONFIRMATION\n" + activeAccount + "\n");
 						
 					} else if (accountAction == 2 && transApproved == true) {
 						activeAccount.deposit(transAmount);
+						System.out.print("\n\n-----------------------------------------------------------" + 
+				                         "\nACCOUNT CONFIRMATION\n" + activeAccount + "\n");
+						
+					} else if (accountAction == 3) {
 						activeAccount.accrueInterest();
+						System.out.print("\n\n-----------------------------------------------------------" + 
+		                         "\nACCOUNT CONFIRMATION\n" + activeAccount + "\n");
 					}
 					
 					// Commit Transaction
