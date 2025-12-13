@@ -1,0 +1,37 @@
+package animalCounter;
+
+public class Alligator extends Animal {
+	
+	// Super Class Instantiation
+	public Alligator(Integer initial_Count) {
+		super(initial_Count);
+	}
+	
+	@Override
+	public void resetCounter() {
+		count = 0;
+	}
+	
+	@Override
+	public Integer getCount() {
+		return count;
+	}
+	
+	@Override
+	public void incrementCount(Animal otherAnimal) {
+		
+		// Increment Count
+		count += 1;
+		
+		// Check other Animal
+		if (otherAnimal.count >= 1) {
+			otherAnimal.count -= 1;
+		}
+	}
+
+	public static void main(String[] args) {
+		// TODO Auto-generated method stub
+
+	}
+
+}
