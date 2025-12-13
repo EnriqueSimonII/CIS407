@@ -50,8 +50,7 @@ public class AnimalCounterGUI {
 		exitBtn = new JButton("EXIT");
 		
 		// Component Sets
-
-		// Welcome Message - big and centered at top
+		// Welcome Message
 		welcomeLabel.setFont(new Font("Arial", Font.BOLD, 36));
 		welcomeLabel.setHorizontalAlignment(SwingConstants.CENTER);
 		welcomeLabel.setBounds(100, 50, 800, 80);
@@ -99,7 +98,7 @@ public class AnimalCounterGUI {
 		radioSheep.setFont(new Font("Arial", Font.PLAIN, 24));
 		radioSheep.setBounds(600, 580, 150, 50);
 
-		// EXIT Button - big and red at the bottom
+		// EXIT Button
 		exitBtn.setFont(new Font("Arial", Font.BOLD, 32));
 		exitBtn.setHorizontalAlignment(SwingConstants.CENTER);
 		exitBtn.setBounds(350, 700, 300, 100);
@@ -123,8 +122,6 @@ public class AnimalCounterGUI {
 
 	public static void main(String[] args) {
 		// TODO Auto-generated method stub
-		
-
 	}
 
 }
