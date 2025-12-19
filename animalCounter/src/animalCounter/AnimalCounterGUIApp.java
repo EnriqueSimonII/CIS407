@@ -19,6 +19,7 @@ public class AnimalCounterGUIApp {
 			Alligator alligator = new animalCounter.Alligator(0);
 			Sheep sheep = new animalCounter.Sheep(0);
 			
+			// Event and Handlers
             class ButtonHandler implements ActionListener {
             	
             	@Override
