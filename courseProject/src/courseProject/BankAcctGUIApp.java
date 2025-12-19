@@ -14,6 +14,175 @@ public class BankAcctGUIApp {
 	public static ArrayList<Customer> customers_List = new ArrayList<>();
 	
 	@SuppressWarnings("static-access")
+	public static void addCustomer(BankAcctGUI gui) {
+		
+		// Get Fields
+        String custID = gui.custID_Input.getText().trim();
+        String custSSN = gui.custSSN_Input.getText().trim();
+        String custLast = gui.custLast_Input.getText().trim();
+        String custFirst = gui.custFirst_Input.getText().trim();
+        String custStreet = gui.custStreet_input.getText().trim();
+        String custCity = gui.custCity_Input.getText().trim();
+        String custState = (String) gui.custState_Input.getSelectedItem();
+        String custZip = gui.custZip_Input.getText().trim();
+        String custPhone = gui.custPhone_Input.getText().trim();
+
+        // Create Customer
+        Customer cust = new Customer(custID, custSSN, custLast, custFirst,
+                                     custStreet, custCity, custState, custZip, custPhone);
+        
+        // Add Customer
+        if (validateCustomer(cust, gui)) {
+        	
+        	// Save Valid Customer
+        	customers_List.add(cust);
+            gui.monitor.append("Customer added: " + custFirst + " " + custLast + "\n");
+            System.out.print("Customer added: " + custFirst + " " + custLast + "\n");
+            clearCustomerFields(gui);
+        }
+    }
+	
+	@SuppressWarnings("static-access")
+	public static void addAccount(BankAcctGUI gui) {
+		
+		// Bad Defaults
+		String acctNum = "------";
+        String acctType = "";
+        Double servFee = 999.00;
+        Double intRate = 999.00;
+        Double ovDraftFee = 999.00;
+        Double bal = 0.00;
+        String custFK = "";
+
+		try {
+			// Get Fields
+	        acctNum = gui.acctNum_Input.getText().trim();
+	        acctType = gui.group.getSelection().getActionCommand();
+	        servFee = Double.parseDouble(gui.acctFee_Input.getText().trim());
+	        intRate = Double.parseDouble(gui.acctRate_Input.getText().trim());
+	        ovDraftFee = Double.parseDouble(gui.acctDraftF_Input.getText().trim());
+	        bal = Double.parseDouble(gui.acctBal_Input.getText().trim());
+	        custFK = gui.acctCustFK_Input.getText().trim();
+	        
+		} catch (Exception ex) {
+			System.out.print("Error with Fields (using bad defaults to trigger validation method)\n");
+		}
+
+		// Create Account
+        Account acct;
+        if ("CHK".equals(acctType)) {
+            acct = new CheckingAccount(acctNum, acctType, servFee, intRate, ovDraftFee, bal, custFK);
+        } else {
+            acct = new SavingsAccount(acctNum, acctType, servFee, intRate, ovDraftFee, bal, custFK);
+        }
+		
+        // Add Account
+        if (validateAccount(acct, gui)) {
+        	
+        	// Save Valid Customer
+        	accounts_List.add(acct);
+            gui.monitor.append("Account added: " + acctNum + "\n");
+            System.out.print("Account added: " + acctNum + "\n");
+            clearAccountFields(gui);
+        }
+    }
+	
+	@SuppressWarnings("static-access")
+	public static void addTransaction(BankAcctGUI gui) {
+
+		// Elements & Storage
+		String errors_Found = "ERRORS:\n";
+		Boolean validated = true;
+		Boolean acctFound = false;
+		Account transAccount = null;
+		
+		// Bad Defaults
+		String transAcct = "------";
+		Double transAmount = 999.00;
+		String transType = "SELECT";
+		
+		
+		try {
+			// Get Fields
+			transAmount = Double.parseDouble(gui.transAmt_Input.getText().trim());
+			transAcct = gui.transSelect_Input.getText().trim();
+			transType = (String) gui.transType_Input.getSelectedItem();
+			
+		} catch (Exception ex) {
+			System.out.print("Error with Fields (using bad defaults to trigger validation method)\n");
+			
+		}
+		
+		// Validate Data: TRANS ACCOUNT EXISTS
+		for (Account acctSearch : accounts_List) {
+			if (acctSearch.acctNumber.equals(transAcct)) {
+				transAccount = acctSearch;
+				acctFound = true;
+				
+			} else {
+				errors_Found += String.format("ACCOUNT NUM -------: No Match for account (" + transAcct + ")\n");
+			}
+		}
+		
+		// Validate Data: TRANS ACCOUNT NUMBER
+		if (!DataEntry.checkStringLength(transAcct, 1, 5)) {
+			errors_Found += "ACCOUNT NUM -------: Max 5 Characters\n";
+			errors_Found += "TRANS AMMOUNT -----: Only Decimal\n";
+			validated = false;
+		}
+		
+		/// Validate Data: TRANS TYPE
+		if (!DataEntry.checkStringOptions(Arrays.asList("DEPOSIT", "WITHDRAW", "ACCRUE INTEREST"), transType)) {
+			errors_Found += "ACCOUNT TYPE ------: Only DEPOSIT, WITHDRAW, ACCRUE INTEREST\n";
+			validated = false;
+		}
+			
+		// Add Valid Transactions
+		if (validated && acctFound) {
+			
+			// Deposit
+			if (transType.equals("DEPOSIT")) {
+				transAccount.deposit(transAmount);
+				gui.monitor.setText("SUCCESS:\n" + transAccount);
+				clearTransFields(gui);
+				
+			// Withdraw
+			} else if (transType.equals("WITHDRAW")) {
+				
+				// Valid Savings
+				if (transAccount.acctType.equals("SAV") && transAccount.balance(transAmount)) {
+					transAccount.withdrawal(transAmount);
+					gui.monitor.setText("SUCCESS:\n" + transAccount);
+					clearTransFields(gui);
+					
+				// Invalid Savings
+				} else if (transAccount.acctType.equals("SAV") && !transAccount.balance(transAmount)) {
+					errors_Found += "ACCOUNT BALANCE ---: Insufficient Fund Available Balance: $" + transAccount.acctBal + "\n";
+					validated = false;
+
+				// Checking
+				} else {
+					transAccount.withdrawal(transAmount);
+					gui.monitor.setText("SUCCESS:\n" + transAccount);
+					clearTransFields(gui);
+				}
+				
+			// Accrue Interest
+			} else if (transType.equals("ACCRUE INTEREST")) {
+				transAccount.accrueInterest();
+				gui.monitor.setText("SUCCESS:\n" + transAccount);
+				clearTransFields(gui);
+			}
+		}
+		
+		// Display Errors
+		if (validated == false) {
+			gui.monitor.setText(errors_Found);
+			System.out.print(errors_Found);
+		}
+	}
+	
+	@SuppressWarnings("static-access")
 	public static boolean validateCustomer(Customer cust, BankAcctGUI gui) {
 		
 		// Elements & Storage
@@ -143,83 +312,9 @@ public class BankAcctGUIApp {
 	}
 	
 	@SuppressWarnings("static-access")
-	public static void addCustomer(BankAcctGUI gui) {
-		
-		// Get Fields
-        String custID = gui.custID_Input.getText().trim();
-        String custSSN = gui.custSSN_Input.getText().trim();
-        String custLast = gui.custLast_Input.getText().trim();
-        String custFirst = gui.custFirst_Input.getText().trim();
-        String custStreet = gui.custStreet_input.getText().trim();
-        String custCity = gui.custCity_Input.getText().trim();
-        String custState = (String) gui.custState_Input.getSelectedItem();
-        String custZip = gui.custZip_Input.getText().trim();
-        String custPhone = gui.custPhone_Input.getText().trim();
-
-        // Create Customer
-        Customer cust = new Customer(custID, custSSN, custLast, custFirst,
-                                     custStreet, custCity, custState, custZip, custPhone);
-        
-        // Add Customer
-        if (validateCustomer(cust, gui)) {
-        	
-        	// Save Valid Customer
-        	customers_List.add(cust);
-            gui.monitor.append("Customer added: " + custFirst + " " + custLast + "\n");
-            System.out.print("Customer added: " + custFirst + " " + custLast + "\n");
-            clearCustomerFields(gui);
-        }
-    }
-	
-	@SuppressWarnings("static-access")
-	public static void addAccount(BankAcctGUI gui) {
-		
-		// Bad Defaults
-		String acctNum = "------";
-        String acctType = "";
-        double servFee = 999;
-        double intRate = 999;
-        double ovDraftFee = 999;
-        double bal = 0;
-        String custFK = "";
-
-		try {
-			// Get Fields
-	        acctNum = gui.acctNum_Input.getText().trim();
-	        acctType = gui.group.getSelection().getActionCommand();
-	        servFee = Double.parseDouble(gui.acctFee_Input.getText().trim());
-	        intRate = Double.parseDouble(gui.acctRate_Input.getText().trim());
-	        ovDraftFee = Double.parseDouble(gui.acctDraftF_Input.getText().trim());
-	        bal = Double.parseDouble(gui.acctBal_Input.getText().trim());
-	        custFK = gui.acctCustFK_Input.getText().trim();
-	        
-		} catch (Exception ex) {
-			System.out.print("Error with Fields (using bad defaults to trigger validation method)\n");
-		}
-
-		// Create Account
-        Account acct;
-        if ("CHK".equals(acctType)) {
-            acct = new CheckingAccount(acctNum, acctType, servFee, intRate, ovDraftFee, bal, custFK);
-        } else {
-            acct = new SavingsAccount(acctNum, acctType, servFee, intRate, ovDraftFee, bal, custFK);
-        }
-		
-        // Add Account
-        if (validateAccount(acct, gui)) {
-        	
-        	// Save Valid Customer
-        	accounts_List.add(acct);
-            gui.monitor.append("Account added: " + acctNum + "\n");
-            System.out.print("Account added: " + acctNum + "\n");
-            clearAccountFields(gui);
-        }
-    }
-	
-	@SuppressWarnings("static-access")
 	public static void clearCustomerFields(BankAcctGUI gui) {
        
-		// Clear all Fields
+		// Clear All Fields
 		gui.custID_Input.setText("");
         gui.custSSN_Input.setText("");
         gui.custLast_Input.setText("");
@@ -228,14 +323,13 @@ public class BankAcctGUIApp {
         gui.custCity_Input.setText("");
         gui.custState_Input.setSelectedIndex(0);;
         gui.custZip_Input.setText("");
-        gui.custPhone_Input.setText("");
-        
+        gui.custPhone_Input.setText("");  
     }
 
 	@SuppressWarnings("static-access")
 	public static void clearAccountFields(BankAcctGUI gui) {
     	
-    	// Clear all Fields
+    	// Clear All Fields
         gui.acctNum_Input.setText("");
         gui.acctType_Input.setSelectedIndex(0);
         gui.acctFee_Input.setText("");
@@ -245,9 +339,16 @@ public class BankAcctGUIApp {
         gui.acctCustFK_Input.setText("");
         gui.check_Input.setSelected(false);
         gui.saving_Input.setSelected(false);
-        
-        
     }
+	
+	@SuppressWarnings("static-access")
+	public static void clearTransFields(BankAcctGUI gui) {
+		
+		// Clear All Fields
+		gui.transSelect_Input.setText("");
+		gui.transAmt_Input.setText("");
+		gui.transType_Input.setSelectedIndex(0);
+	}
 
 	@SuppressWarnings("static-access")
     public static void viewCustomers(BankAcctGUI gui) {
@@ -355,7 +456,7 @@ public class BankAcctGUIApp {
                     	 viewAll(appGUI);
                     	 
                     } else if ("ADD TRANSACTIONS".equals(cmd)) {
-                    	System.out.print("Add Method for Transactions");
+                    	addTransaction(appGUI);
                     }
                 }
             }

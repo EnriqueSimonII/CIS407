@@ -124,7 +124,7 @@ public class BankAcctGUI extends JFrame  {
 				                 "NM", "NY", "NC", "ND", "OH", "OK", "OR", "PA", "RI", "SC",
 				                 "SD", "TN", "TX", "UT", "VT", "VA", "WA", "WV", "WI", "WY", "DC"};
 		
-		String[] transTypes = {"DEPOSIT", "WITHDRAW", "ACCRUE INTEREST"};
+		String[] transTypes = {"SELECT", "DEPOSIT", "WITHDRAW", "ACCRUE INTEREST"};
 		
 		// Customer Components
 		custID_Input = new JTextField();

@@ -28,10 +28,10 @@ abstract class Account {
 	}
 	
 	// Abstract Methods
-	public abstract void withdrawal(double inputAmount);
-	public abstract void deposit(double inputAmount);
+	public abstract void withdrawal(Double inputAmount);
+	public abstract void deposit(Double inputAmount);
 	public abstract void accrueInterest();
-	public abstract boolean balance(double inputAmount);
+	public abstract boolean balance(Double inputAmount);
 
 	// Return ALL Data
 	public String toString() {

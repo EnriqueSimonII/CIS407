@@ -19,14 +19,14 @@ public class SavingsAccount extends Account {
 	
 	
 	@Override
-	public void withdrawal(double inputAmount) {
+	public void withdrawal(Double inputAmount) {
 		
 		// Withdraw & Charge Fees
 		acctBal -= (inputAmount + serviceFee);
 	}
 	
 	@Override
-	public void deposit(double inputAmount) {
+	public void deposit(Double inputAmount) {
 		
 		// Deposit & Charge Fees
 		acctBal += (inputAmount - serviceFee);
@@ -42,7 +42,7 @@ public class SavingsAccount extends Account {
 	}
 	
 	@Override
-	public boolean balance(double inputAmount) {
+	public boolean balance(Double inputAmount) {
 		
 		// Check Funds Sufficient
 		if ((acctBal - (inputAmount + serviceFee)) > 0) {
